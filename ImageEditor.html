@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>DrumUp</title>
+	<link href="http://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+	<style type="text/css">
+		.controls {
+		    display: inline-block;
+		    
+		   
+		    padding: 15px;
+		    margin-left: 0%;
+		    align-items: left;
+		    font: 20px "Montserrat", sans-serif;
+		    line-height: 1.8;
+		    color: #050607;
+
+
+		}
+		.canvas-container{
+			display: inline-block;
+			margin-top: 0.5%;
+			
+		}
+		body {
+		    font: 20px "Montserrat", sans-serif;
+		    line-height: 1.8;
+		    color: #f5f6f7;
+		    margin-top: 1.5%;
+		}
+		.btn {
+			font: 20px "Montserrat", sans-serif;
+		    line-height: 1.8;
+		    font-size: 20px;
+		    color: #f5f6f7;
+		    height: 7%;
+		}
+		/*Styling to style checkboxes, file input and color input  as buttons*/
+		.fileContainer {
+		    overflow: hidden;
+		    position: relative;
+		}
+
+		.fileContainer [type=file] {
+		    cursor: inherit;
+		    display: block;
+		    font-size: 999px;
+		    filter: alpha(opacity=0);
+		    min-height: 100%;
+		    min-width: 100%;
+		    opacity: 0;
+		    position: absolute;
+		    right: 0;
+		    text-align: right;
+		    top: 0;
+		}
+
+		
+
+		.fileContainer {
+		    
+		    border-radius: .5em;
+		    float: left;
+		    padding: .5em;
+		}
+
+		.fileContainer [type=file] {
+		    cursor: pointer;
+		}
+
+
+		.fileContainer [type=color] {
+		    cursor: inherit;
+		    display: block;
+		    font-size: 999px;
+		    filter: alpha(opacity=0);
+		    min-height: 100%;
+		    min-width: 100%;
+		    opacity: 0;
+		    position: absolute;
+		    right: 0;
+		    text-align: right;
+		    top: 0;
+		}
+
+		/* Example stylistic flourishes */
+
+		.fileContainer [type=color] {
+		    cursor: pointer;
+		}
+
+		.fileContainer [type=checkbox] {
+		    cursor: inherit;
+		    display: block;
+		    font-size: 999px;
+		    filter: alpha(opacity=0);
+		    min-height: 100%;
+		    min-width: 100%;
+		    opacity: 0;
+		    position: absolute;
+		    right: 0;
+		    text-align: right;
+		    top: 0;
+		}
+
+		/* Example stylistic flourishes */
+
+		.fileContainer [type=checkbox] {
+		    cursor: pointer;
+		}
+
+		
+
+		input[type=checkbox]:checked + span {
+		    
+		    color:#888;
+		}
+		select{
+			border-radius: 2%;
+		}
+		.hide{
+			display: none;
+		}
+		
+		
+	</style>
+</head>
+<body>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.5.0/fabric.min.js"></script>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href="http://rithychhen.com/assets/css/bootstrap.min.css" rel="stylesheet">
+	<script class="jsbin" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<script src="reimg.js"></script>
+	<!-- CSS and JS for ajaximage upload -->
+    <link href="/static/ajaximage/css/bootstrap-progress.min.css" type="text/css" media="all" rel="stylesheet" />
+    <link href="/static/ajaximage/css/styles.css" type="text/css" media="all" rel="stylesheet" />
+    <script type="text/javascript" src="/static/ajaximage/js/ajaximage.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+	<div class="page-header"><h1>&nbsp; &nbsp; &nbsp; Image Editor:</h1></div>
+	<div class="container-fluid">
+		<div class="row">
+			<!-- div for canvas -->
+			<div class="col-md-6">
+				<canvas id="paper" width="600" height="450" style="border:5px solid #1c2456; margin-top: 0%; margin-left: 1%;" class="img-responsive img-thumbnai">
+					
+				</canvas>
+				<button type="button" class="btn btn-lg" onClick="refreshPage()" style="display: none; width: 20%; font-size: 15px; line-height: 2.5; margin-left: 1%; margin-top: 0%;" id="so_div">Start Over</button>
+			</div>
+			<!-- div for controls -->
+			<div class="col-md-4 controls container-fluid">
+				 
+				 <label class="fileContainer btn btn-success btn-lg center" style="width: 55%; font-size: 15px; line-height: 2.5; margin: 1%;" id="upload">
+					<span class="glyphicon glyphicon-camera"></span>
+				 	   &nbsp;&nbsp;Upload Image
+					<input type="file" id="imgLoader">
+				</label>
+				 
+				
+				<button id="save" class="btn btn-success btn-lg"  style="width: 45%; font-size: 15px; line-height: 2.5; margin: 1%; display: none;">
+					<span class="glyphicon glyphicon-plus"></span> Save Image
+				</button>
+				<button id="delete" class="btn btn-warning" style="width: 70%; font-size: 15px; line-height: 2.5; margin: 1%; display: none;"><span class="glyphicon glyphicon-minus"> </span>&nbsp; &nbsp;   Delete selected object(s)</button>
+				
+				<button id="add" class="btn btn-success"  style="width: 45%; font-size: 15px; line-height: 2.5; margin: 1%; display: none;">
+					<span class="glyphicon glyphicon-plus"></span> Add Text
+				</button>
+				
+				
+				<br>
+				 <div class="fileContainer btn" style="height: 8%; margin: 1%; display: none;" id="b_div">
+				    <label><input type="checkbox" id="bold" name="bold"> <span class="fa fa-bold" for="bold" style="height: 1.0em;"></span></label>
+				  </div>
+				  <div class="fileContainer btn" style="height: 8%; margin: 1%; display: none;" id="i_div">
+				    <label><input type="checkbox" id="italics" name="italics"> <span class="fa fa-italic" for="italics"></span></label>
+				  </div>
+				  <div class="fileContainer btn" style="height: 8%; margin: 1%; display: none;" id="u_div">
+				    <label><input type="checkbox" id="underline" name ="underline"> <span class="fa fa-underline" for ="underline"></span></label>
+				  </div>
+				  <div class="fileContainer btn" style="display: none; margin: 1%; height: 15%;" id="color_div">
+				    	<input type="color" id="font-color" value="" style="height: 100%; margin-bottom: 0%;"><span class="fa fa-font" id="set-color"></span>
+				    </div>
+				  
+				  	
+				    <select id="font-size" name="font-size" style="width: 14%; display: none; height: 10%; margin: 1%;">
+				      <option value="10" style="float: right;">10</option>
+				      <option value="15" style="float: right;">15</option>
+				      <option value="20" style="float: right;">20</option>
+				      <option value="25" style="float: right;">25</option>
+				      <option selected="" value="30" style="float: right;">30</option>
+				      <option value="35" style="float: right;">35</option>
+				      <option value="40" style="float: right;">40</option>
+				      <option value="45" style="float: right;">45</option>
+				      <option value="50" style="float: right;">50</option>
+				      <option value="55" style="float: right;">55</option>
+				      <option value="60" style="float: right;">60</option>
+				      
+				    </select>
+				    <br><br>
+				    <p style="display: none;" id="bri_div">
+						<label style="display: inline-block;">Brightness:</label>
+
+						<input align="right" style="display: inline-block; width: 50%; margin-top: 1%; margin-left: 1%;" type="range" id="brightness-value" value="0" min="-255" max="255">
+
+					</p>
+					<p style="display: none;" id="con_div">
+						<label style="display: inline-block;">Contrast: </label>
+
+						<input align="right" style="display: inline-block; width: 50%; margin-top: 1%; margin-left: 3.7%;" type="range" id="contrast-value" value="0" min="-255" max="255">
+					</p>
+
+					<p style="display: none;" id="sat_div">
+						<label style="display: inline-block;">Saturation:</label>
+						<input align="right" style="display: inline-block; width: 50%; margin-top: 1%; margin-left: 1.2%;" type="range" id="saturate-value" value="0" min="-100" max="100">
+					</p>
+
+					<p style="display: none;" id="pix_div">
+						<label style="display: inline-block;">Pixelate:</label>
+						<input align="right" style="display: inline-block; width: 50%; margin-top: 1%; margin-left: 3%;" type="range" id="pixelate-value" value="0" min="-100" max="100">
+					</p>
+					<div class="fileContainer btn" style="height: 12%; margin: 1%; display: none;" id="gray_div">
+					    <label><input type="checkbox" id="grayscale" name="grayscale">
+					    	<span for="grayscale">Grayscale</span><br>
+					    	<img style="margin-top: 25%;" src="/home/riya/intern_winter/grayscale.jpg" alt="Smiley face" height="52" width="42">
+					     </label>
+					  </div>
+					<div class="fileContainer btn" style="height: 12%; margin: 1%; display: none;" id="sepia_div">
+					    <label> <input type="checkbox" id="sepia2" name="sepia2">
+					    	<span for="sepia2">Sepia</span><br>
+					    	<img style="margin-top: 25%;" src="/home/riya/intern_winter/sepia.png" alt="Smiley face" height="52" width="42">
+					    </label>
+					  </div>
+					<div class="fileContainer btn" style="height: 8%; margin: 1%; display: none;" id="blur_div">
+					    <label> <input type="checkbox" id="blur" name="blur">
+					    	<span for="blur">Blur</span><br>
+					    	<img src="/home/riya/intern_winter/blur.png" alt="Smiley face" height="42" width="42">
+					    </label>
+					  </div>
+					  <div class="fileContainer btn" style="height: 8%; margin: 1%; display: none;" id="sharpen_div">
+					    <label><input type="checkbox" id="sharpen" name="sharpen">
+					    	<span for="sharpen">Sharpen</span><br>
+					    	<img src="/home/riya/intern_winter/sharpen.png" alt="Smiley face" height="42" width="42">
+					    	
+					     </label>
+					  </div>
+
+			</div>
+
+		</div>
+		
+	</div>
+	<!-- other sample controls you may add yourself from examples above -->
+	<!-- <img id="canvasImg" alt="Right click to save me!"> -->
+	
+	<!-- <div class="controls container-fluid" style="margin-left: 1%; width: 75%;">
+	  <div class="page-header"><h3>Image Editing Filters:</h3></div> -->
+	  
+	  
+	  <!-- <p>
+	    <label><span>Invert:</span> <input type="checkbox" id="invert"></label>
+	  </p>
+	  <p>
+	    <label><span>Sepia:</span> <input type="checkbox" id="sepia"></label>
+	  </p> -->
+	  
+	  <!-- <p>
+	    <label><span>Remove white:</span> <input type="checkbox" id="remove-white"></label>
+	    <br>
+	    <label>Threshold: <input type="range" id="remove-white-threshold" value="60" min="0" max="255"></label>
+	    <br>
+	    <label>Distance: <input type="range" id="remove-white-distance" value="10" min="0" max="255"></label>
+	  </p> -->
+	 
+	  <!-- <p>
+	    <label><span>Noise:</span> <input type="checkbox" id="noise"></label>
+	    <br>
+	    <label>Value: <input type="range" id="noise-value" value="100" min="0" max="1000"></label>
+	  </p>
+	  <p>
+	    <label><span>GradientTransparency:</span> <input type="checkbox" id="gradient-transparency"></label>
+	    <br>
+	    <label>Value: <input type="range" id="gradient-transparency-value" value="100" min="0" max="255"></label>
+	  </p> -->
+	 
+	  
+	  <!-- <p>
+	    <label><span>Emboss:</span> <input type="checkbox" id="emboss"></label>
+	  </p>
+	  <p>
+	    <label><span>Tint:</span> <input type="checkbox" id="tint"></label><br>
+	    <label>Color: <input type="color" id="tint-color" value=""></label><br>
+	    <label>Opacity: <input type="range" id="tint-opacity" min="0" max="1" value="1" step="0.1"></label><br>
+	  </p>
+	  <p>
+	    <label><span>Multiply:</span> <input type="checkbox" id="multiply"></label><br>
+	    <label>Color: <input type="color" id="multiply-color" value=""></label><br>
+	  </p>
+	  <p>
+	  <label><span>Blend:</span> <input type="checkbox" id="blend"></label>
+	  <br>
+	  <label>Mode:</label>
+	    <select id="blend-mode" name="blend-mode">
+	      <option selected="" value="add">Add</option>
+	      <option value="diff">Diff</option>
+	      <option value="subtract">Subtract</option>
+	      <option value="multiply">Multiply</option>
+	      <option value="screen">Screen</option>
+	      <option value="lighten">Lighten</option>
+	      <option value="darken">Darken</option>
+	    </select>
+	    <br>
+	    <label>Color: <input type="color" id="blend-color" value="#00f900"></label><br>
+	  </p> -->
+	<!-- </div>
+	<div class="controls container-fluid" style="margin-left: 1%; display: inline-block;">
+	  <div class="page-header"><h3>Text Editing Filters:</h3></div> -->
+	 
+	  <!-- <p>
+	  	<label>Font Style:</label>
+	    <select id="font-control" name="font-control">
+	      <option selected="" value="Times New Roman">Times New Roman</option>
+	      <option value="Comic Sans">Comic Sans</option>
+	      <option value="Hoefler Text">Hoefler Text</option>
+	      
+	    </select>
+	  </p> -->
+	  <!-- <p>
+	    
+	    
+	    
+	  </p>
+	</div>  
+	<br><br> -->
+	&nbsp; &nbsp;
+	
+	
+	<script type="text/javascript">
+		var canvas = new fabric.Canvas('paper', { isDrawingMode: false }),
+	      f = fabric.Image.filters;
+		var text;
+		var image;
+		var activeObject;
+		var activeObjectType;
+		var activeGroup; 
+		var filters;
+		var i, flg=0;
+		var obj;
+		var ih, iw, fh, fw, width_ratio, height_ratio, value;
+		
+		//To delete selected objects
+		$("#delete").click(function(){
+		    canvas.isDrawingMode = false;
+		    deleteObjects();
+		});
+		//To add text on top of image
+		$("#add").click(function(){
+		    canvas.isDrawingMode = false;
+		    addText();
+		});
+		//To hide upload image button on clicking upload button and display editing facility
+		$("#upload").click(function(){
+			console.log("Uploaded");
+		   
+		    document.getElementById('sharpen_div').style.display = 'block'; 
+		    document.getElementById('gray_div').style.display = 'block'; 
+		    document.getElementById('sepia_div').style.display = 'block'; 
+		    document.getElementById('blur_div').style.display = 'block';
+		    document.getElementById('bri_div').style.display = 'block'; 
+		    document.getElementById('con_div').style.display = 'block'; 
+		    document.getElementById('sat_div').style.display = 'block'; 
+		    document.getElementById('pix_div').style.display = 'block'; 
+		    document.getElementById('color_div').style.display = 'inline-block'; 
+		    document.getElementById('font-size').style.display = 'inline-block';
+		    document.getElementById('u_div').style.display = 'block'; 
+		    document.getElementById('i_div').style.display = 'block'; 
+		    document.getElementById('b_div').style.display = 'block';
+		    document.getElementById('add').style.display = 'block'; 
+		    document.getElementById('save').style.display = 'block'; 
+		    document.getElementById('delete').style.display = 'block';
+		    document.getElementById('so_div').style.display = 'block';
+		    document.getElementById('upload').style.display = 'none'; 
+		   
+		});
+
+		// Adding objects to the canvas...
+		function refreshPage(){
+   			 window.location.reload();
+   		}
+		
+		// adding text
+		function addText()
+		{
+			text = new fabric.IText('Text inside canvas', { 
+			  left: 40, 
+			  top: 50
+
+			  
+			});
+			text.hasRotatingPoint = true;
+			canvas.add(text);
+			
+
+		}
+		
+		
+		
+
+		// select all objects
+		function deleteObjects(){
+			activeObject = canvas.getActiveObject(),
+		    activeGroup = canvas.getActiveGroup();
+		    console.log(activeObject);
+		    if (activeObject) {
+		        if (confirm('Are you sure?')) {
+		            canvas.remove(activeObject);
+		        }
+		    }
+		    else if (activeGroup) {
+		        if (confirm('Are you sure?')) {
+		            var objectsInGroup = activeGroup.getObjects();
+		            canvas.discardActiveGroup();
+		            objectsInGroup.forEach(function(object) {
+		            canvas.remove(object);
+		            });
+		        }
+		    }
+		}
+		 
+		//Function to upload image
+		document.getElementById('imgLoader').onchange = function handleImage(e) {
+				    var reader = new FileReader();
+				    reader.onload = function (event) { console.log('fdsf');
+				        var imgObj = new Image();
+				        imgObj.src = event.target.result;
+				        imgObj.onload = function () {
+				            // start fabricJS stuff
+				            image = new fabric.Image(imgObj);
+				            ih = imgObj.naturalHeight;
+			            	console.log(ih);
+							iw = imgObj.naturalWidth;
+							width_ratio  = canvas.width  / iw;
+							height_ratio = canvas.height / ih;
+							if (width_ratio > height_ratio) {
+							    image.lockMovementX = true;
+				            	image.lockMovementY = false;
+							    fw = iw * width_ratio;
+							    fh = ih*fw/iw;
+							} else {
+								image.lockMovementX = false;
+				            	image.lockMovementY = true;
+							    fh = ih * height_ratio;
+							    fw = iw*fh/ih;    
+							}
+				            
+				            image.set({
+				                left: 0,
+				                top: 0,
+				                angle: 0,
+				                padding: 10,
+				                width: fw,
+				                height: fh,
+				                cornersize: 10
+				            });
+				            
+				            canvas.add(image);
+				            canvas.setActiveObject(image);
+				           
+				            image.sendToBack();
+
+				            // end fabricJS stuff
+				        }
+			         }
+	    reader.readAsDataURL(e.target.files[0]);
+	}
+	//Fabric Js functions to apply filters
+
+	fabric.Object.prototype.transparentCorners = false;
+	  var $ = function(id){return document.getElementById(id)};
+
+	  function applyFilter(index, filter) {
+	    obj = canvas.getActiveObject();
+	    if(obj.get('type')=='image')
+	    {
+	    	obj.filters[index] = filter;
+	    	obj.applyFilters(canvas.renderAll.bind(canvas));
+	    }
+	    
+	  }
+
+	  function applyFilterValue(index, prop, value) {
+	    obj = canvas.getActiveObject();
+	    if ((obj.filters[index])&&(obj.get('type')=='image')) {
+	      obj.filters[index][prop] = value;
+	      obj.applyFilters(canvas.renderAll.bind(canvas));
+	    }
+	  }
+
+	  fabric.Object.prototype.padding = 5;
+	  fabric.Object.prototype.transparentCorners = false;
+
+	 
+
+	
+	  canvas.on({
+	    'object:selected': function() {
+	    	
+	      obj = canvas.getActiveObject();
+	      if(obj.get('type')=='i-text')
+	      	textFont(obj);
+
+	      fabric.util.toArray(document.getElementsByTagName('input'))
+	                          .forEach(function(el){ el.disabled = false; })
+
+	      filters = ['grayscale', 'invert', 'remove-white', 'sepia', 'sepia2',
+	                      'brightness', 'contrast', 'saturate', 'noise', 'gradient-transparency', 'pixelate',
+	                      'blur', 'sharpen', 'emboss', 'tint', 'multiply', 'blend'];
+
+	      for (i = 0; i < filters.length; i++) {
+	      	obj = canvas.getActiveObject();
+	      	if(obj.get('type')=='image')
+	        	$(filters[i]).checked = !!obj.filters[i];
+	      }
+	    },
+	    'selection:cleared': function() {
+	      fabric.util.toArray(document.getElementsByTagName('input'))
+	                          .forEach(function(el){ el.disabled = true; })
+	    }
+	  });
+
+	
+	  var indexF;
+	  $('grayscale').onclick = function() {
+	  	
+	    applyFilter(0, this.checked && new f.Grayscale());
+	  };
+
+	  //Comented out filters can be used similarly if you like them
+	 /* $('invert').onclick = function() {
+	    applyFilter(1, this.checked && new f.Invert());
+	  };
+	  $('remove-white').onclick = function () {
+	    applyFilter(2, this.checked && new f.RemoveWhite({
+	      threshold: $('remove-white-threshold').value,
+	      distance: $('remove-white-distance').value
+	    }));
+	  };
+	  $('remove-white-threshold').onchange = function() {
+	    applyFilterValue(2, 'threshold', this.value);
+	  };
+	  $('remove-white-distance').onchange = function() {
+	    applyFilterValue(2, 'distance', this.value);
+	  };
+	  $('sepia').onclick = function() {
+	    applyFilter(3, this.checked && new f.Sepia());
+	  };*/
+	  $('sepia2').onclick = function() {
+	  	
+	    applyFilter(4, this.checked && new f.Sepia2());
+	  };
+	 
+	  $('brightness-value').onchange = function() {
+	  	applyFilter(5,  new f.Brightness({
+	      brightness: parseInt($('brightness-value').value, 10)
+	    }));
+	    applyFilterValue(5, 'brightness', parseInt(this.value, 10));
+	  };
+	  /*$('contrast').onclick = function () {
+	    applyFilter(6, this.checked && new f.Contrast({
+	      contrast: parseInt($('contrast-value').value, 10)
+	    }));
+	  };*/
+	  $('contrast-value').onchange = function() {
+	  	applyFilter(6,  new f.Contrast({
+	      contrast: parseInt($('contrast-value').value, 10)
+	    }));
+	    //applyFilterValue(6, 'contrast', parseInt(this.value, 10));
+	  };
+	  /*$('saturate').onclick = function () {
+	    applyFilter(7, this.checked && new f.Saturate({
+	      saturate: parseInt($('saturate-value').value, 10)
+	    }));
+	  };*/
+	  $('saturate-value').onchange = function() {
+	  	 applyFilter(7,   new f.Saturate({
+	      saturate: parseInt($('saturate-value').value, 10)
+	    }));
+	    applyFilterValue(7, 'saturate', parseInt(this.value, 10));
+	  };
+	  /*$('noise').onclick = function () {
+	    applyFilter(8, this.checked && new f.Noise({
+	      noise: parseInt($('noise-value').value, 10)
+	    }));
+	  };
+	  $('noise-value').onchange = function() {
+	    applyFilterValue(8, 'noise', parseInt(this.value, 10));
+	  };
+	  $('gradient-transparency').onclick = function () {
+	    applyFilter(9, this.checked && new f.GradientTransparency({
+	      threshold: parseInt($('gradient-transparency-value').value, 10)
+	    }));
+	  };
+	  $('gradient-transparency-value').onchange = function() {
+	    applyFilterValue(9, 'threshold', parseInt(this.value, 10));
+	  };*/
+	  /*$('pixelate').onclick = function() {
+	    applyFilter(10, this.checked && new f.Pixelate({
+	      blocksize: parseInt($('pixelate-value').value, 10)
+	    }));
+	  };*/
+	  $('pixelate-value').onchange = function() {
+	  	if (flg==0) {
+	  		applyFilter(10,  new f.Pixelate({
+		      blocksize: parseInt($('pixelate-value').value, 10)
+		    }));
+		    flg=1;
+	  	}
+	  	else
+	  		applyFilterValue(10, 'blocksize', parseInt(this.value, 10));
+	  	
+	    
+	  };
+	  $('blur').onclick = function() {
+	    applyFilter(11, this.checked && new f.Convolute({
+	      matrix: [ 1/9, 1/9, 1/9,
+	                1/9, 1/9, 1/9,
+	                1/9, 1/9, 1/9 ]
+	    }));
+	  };
+	  $('sharpen').onclick = function() {
+	    applyFilter(12, this.checked && new f.Convolute({
+	      matrix: [  0, -1,  0,
+	                -1,  5, -1,
+	                 0, -1,  0 ]
+	    }));
+	  };
+	 /* $('emboss').onclick = function() {
+	    applyFilter(13, this.checked && new f.Convolute({
+	      matrix: [ 1,   1,  1,
+	                1, 0.7, -1,
+	               -1,  -1, -1 ]
+	    }));
+	  };
+	  $('tint').onclick = function() {
+	    applyFilter(14, this.checked && new f.Tint({
+	      color: document.getElementById('tint-color').value,
+	      opacity: parseFloat(document.getElementById('tint-opacity').value)
+	    }));
+	  };
+	  $('tint-color').onchange = function() {
+	    applyFilterValue(14, 'color', this.value);
+	  };
+	  $('tint-opacity').onchange = function() {
+	    applyFilterValue(14, 'opacity', parseFloat(this.value));
+	  };
+	  $('multiply').onclick = function() {
+	    applyFilter(15, this.checked && new f.Multiply({
+	      color: document.getElementById('multiply-color').value
+	    }));
+	  };
+	  $('multiply-color').onchange = function() {
+	    applyFilterValue(15, 'color', this.value);
+	  };
+
+	  $('blend').onclick= function() {
+	    applyFilter(16, this.checked && new f.Blend({
+	      color: document.getElementById('blend-color').value,
+	      mode: document.getElementById('blend-mode').value
+	    }));
+	  };
+
+	  $('blend-mode').onchange = function() {
+	    applyFilterValue(16, 'mode', this.value);
+	  };
+
+	  $('blend-color').onchange = function() {
+	    applyFilterValue(16, 'color', this.value);
+	  };*/
+	  function textFont(text)
+	  {
+	  	$('bold').onchange = function() {
+	  	
+		    //text = canvas.getActiveObject();
+		    if (this.checked) 
+		  		text.fontWeight = 'bold'
+		  	else
+		    	text.fontWeight = 'normal';
+	    	canvas.renderAll();
+		  };
+		  $('italics').onchange = function() {
+		  	
+		    if (this.checked) 
+		  		text.fontStyle = 'italic'
+		  	else
+		    	text.fontStyle = '';
+	    	canvas.renderAll();
+		  };
+		  $('underline').onchange = function() {
+		  	if (this.checked) 
+		  		text.textDecoration = 'underline'
+		  	else
+		    	text.textDecoration = '';
+	    	canvas.renderAll();
+		  };
+		/*var fontControl = $('#font-control');
+		$(document).on('change', '#font-control', function () {
+		    text.fontFamily = fontControl.val();
+		    canvas.renderAll();
+		});
+
+		$('font-control').onchange = function(){
+			console.log(document.getElementById('font-control').value);
+			text.fontFamily = document.getElementById('font-control').value;
+			canvas.renderAll();
+		};*/
+		$('font-color').onchange = function() {
+		    console.log(document.getElementById('font-color').value);
+			
+			document.getElementById("set-color").style.color = document.getElementById('font-color').value;
+			text.setColor(document.getElementById('font-color').value);
+			canvas.renderAll();
+		};
+		$('font-size').onchange = function(){
+			console.log(document.getElementById('font-size').value);
+			text.fontSize = document.getElementById('font-size').value;
+			canvas.renderAll();
+		};
+	  }
+
+	//saving canvas as image
+	
+		$('save').onclick = function() {
+			var d=canvas.toDataURL("image/png");
+			
+			 var link = document.createElement('a');
+	          link.href = d;  // use realtive url 
+	          link.download = 'canvasImg.png';
+	          document.body.appendChild(link);
+	          link.click(); 
+		}
+		
+	
+	
+
+	  
+
+	</script>
+</body>
+</html>
