@@ -143,6 +143,8 @@
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 	<div class="page-header"><h1>&nbsp; &nbsp; &nbsp; Image Editor:</h1></div>
 	<div class="container-fluid">
+
+				
 		<div class="row">
 			<!-- div for canvas -->
 			<div class="col-md-6">
@@ -154,21 +156,22 @@
 			<!-- div for controls -->
 			<div class="col-md-4 controls container-fluid">
 				 
-				 <label class="fileContainer btn btn-success btn-lg center" style="width: 55%; font-size: 15px; line-height: 2.5; margin: 1%;" id="upload">
+				 <label class="fileContainer btn btn-success btn-lg center" style="width: 45%; height: 35%; font-size: 15px; line-height: 2.5; margin: 1%; position: absolute; top: 120%; left: -100%;" id="upload">
 					<span class="glyphicon glyphicon-camera"></span>
 				 	   &nbsp;&nbsp;Upload Image
 					<input type="file" id="imgLoader">
 				</label>
 				 
 				
-				<button id="save" class="btn btn-success btn-lg"  style="width: 45%; font-size: 15px; line-height: 2.5; margin: 1%; display: none;">
+				<button id="save" class="btn btn-primary btn-lg"  style="width: 70%; font-size: 15px; line-height: 2.5; margin: 1%; display: none;">
 					<span class="glyphicon glyphicon-plus"></span> Save Image
 				</button>
-				<button id="delete" class="btn btn-warning" style="width: 70%; font-size: 15px; line-height: 2.5; margin: 1%; display: none;"><span class="glyphicon glyphicon-minus"> </span>&nbsp; &nbsp;   Delete selected object(s)</button>
-				
-				<button id="add" class="btn btn-success"  style="width: 45%; font-size: 15px; line-height: 2.5; margin: 1%; display: none;">
+				<button id="add" class="btn btn-primary"  style="width: 70%; font-size: 15px; line-height: 2.5; margin: 1%; display: none;">
 					<span class="glyphicon glyphicon-plus"></span> Add Text
 				</button>
+				<button id="delete" class="btn" style="width: 70%; font-size: 15px; line-height: 2.5; margin: 1%; display: none;"><span class="glyphicon glyphicon-minus"> </span>&nbsp; &nbsp;   Delete selected object(s)</button>
+				
+				
 				
 				
 				<br>
@@ -336,7 +339,181 @@
 	</div>  
 	<br><br> -->
 	&nbsp; &nbsp;
-	
+	<!-- SCRIPT FOR CONTRAST AND SATURATE FILTERS FROM NEWER VERSION OF FABRICJS -->
+	<script type="text/javascript">
+		(function(global) {
+
+  		'use strict';
+
+		  var fabric  = global.fabric || (global.fabric = { }),
+		      extend = fabric.util.object.extend,
+		      filters = fabric.Image.filters,
+		      createClass = fabric.util.createClass;
+
+		  /**
+		   * Contrast filter class
+		   * @class fabric.Image.filters.Contrast
+		   * @memberOf fabric.Image.filters
+		   * @extends fabric.Image.filters.BaseFilter
+		   * @see {@link fabric.Image.filters.Contrast#initialize} for constructor definition
+		   * @see {@link http://fabricjs.com/image-filters|ImageFilters demo}
+		   * @example
+		   * var filter = new fabric.Image.filters.Contrast({
+		   *   contrast: 40
+		   * });
+		   * object.filters.push(filter);
+		   * object.applyFilters(canvas.renderAll.bind(canvas));
+		   */
+		  filters.Contrast = createClass(filters.BaseFilter, /** @lends fabric.Image.filters.Contrast.prototype */ {
+
+		    /**
+		     * Filter type
+		     * @param {String} type
+		     * @default
+		     */
+		    type: 'Contrast',
+
+		    /**
+		     * Constructor
+		     * @memberOf fabric.Image.filters.Contrast.prototype
+		     * @param {Object} [options] Options object
+		     * @param {Number} [options.contrast=0] Value to contrast the image up (-255...255)
+		     */
+		    initialize: function(options) {
+		      options = options || { };
+		      this.contrast = options.contrast || 0;
+		    },
+
+		    /**
+		     * Applies filter to canvas element
+		     * @param {Object} canvasEl Canvas element to apply filter to
+		     */
+		    applyTo: function(canvasEl) {
+		      var context = canvasEl.getContext('2d'),
+		          imageData = context.getImageData(0, 0, canvasEl.width, canvasEl.height),
+		          data = imageData.data,
+		          contrastF = 259 * (this.contrast + 255) / (255 * (259 - this.contrast));
+
+		      for (var i = 0, len = data.length; i < len; i += 4) {
+		        data[i] = contrastF * (data[i] - 128) + 128;
+		        data[i + 1] = contrastF * (data[i + 1] - 128) + 128;
+		        data[i + 2] = contrastF * (data[i + 2] - 128) + 128;
+		      }
+
+		      context.putImageData(imageData, 0, 0);
+		    },
+
+		    /**
+		     * Returns object representation of an instance
+		     * @return {Object} Object representation of an instance
+		     */
+		    toObject: function() {
+		      return extend(this.callSuper('toObject'), {
+		        contrast: this.contrast
+		      });
+		    }
+		  });
+
+		  /**
+		   * Returns filter instance from an object representation
+		   * @static
+		   * @param {Object} object Object to create an instance from
+		   * @return {fabric.Image.filters.Contrast} Instance of fabric.Image.filters.Contrast
+		   */
+		  fabric.Image.filters.Contrast.fromObject = function(object) {
+		    return new fabric.Image.filters.Contrast(object);
+		  };
+
+		})(typeof exports !== 'undefined' ? exports : this);
+
+
+		(function(global) {
+
+		  'use strict';
+
+		  var fabric  = global.fabric || (global.fabric = { }),
+		      extend = fabric.util.object.extend,
+		      filters = fabric.Image.filters,
+		      createClass = fabric.util.createClass;
+
+		  /**
+		   * Saturate filter class
+		   * @class fabric.Image.filters.Saturate
+		   * @memberOf fabric.Image.filters
+		   * @extends fabric.Image.filters.BaseFilter
+		   * @see {@link fabric.Image.filters.Saturate#initialize} for constructor definition
+		   * @see {@link http://fabricjs.com/image-filters|ImageFilters demo}
+		   * @example
+		   * var filter = new fabric.Image.filters.Saturate({
+		   *   saturate: 100
+		   * });
+		   * object.filters.push(filter);
+		   * object.applyFilters(canvas.renderAll.bind(canvas));
+		   */
+		  filters.Saturate = createClass(filters.BaseFilter, /** @lends fabric.Image.filters.Saturate.prototype */ {
+
+		    /**
+		     * Filter type
+		     * @param {String} type
+		     * @default
+		     */
+		    type: 'Saturate',
+
+		    /**
+		     * Constructor
+		     * @memberOf fabric.Image.filters.Saturate.prototype
+		     * @param {Object} [options] Options object
+		     * @param {Number} [options.saturate=0] Value to saturate the image (-100...100)
+		     */
+		    initialize: function(options) {
+		      options = options || { };
+		      this.saturate = options.saturate || 0;
+		    },
+
+		    /**
+		     * Applies filter to canvas element
+		     * @param {Object} canvasEl Canvas element to apply filter to
+		     */
+		    applyTo: function(canvasEl) {
+		      var context = canvasEl.getContext('2d'),
+		          imageData = context.getImageData(0, 0, canvasEl.width, canvasEl.height),
+		          data = imageData.data,
+		          max, adjust = -this.saturate * 0.01;
+
+		      for (var i = 0, len = data.length; i < len; i += 4) {
+		        max = Math.max(data[i], data[i + 1], data[i + 2]);
+		        data[i] += max !== data[i] ? (max - data[i]) * adjust : 0;
+		        data[i + 1] += max !== data[i + 1] ? (max - data[i + 1]) * adjust : 0;
+		        data[i + 2] += max !== data[i + 2] ? (max - data[i + 2]) * adjust : 0;
+		      }
+
+		      context.putImageData(imageData, 0, 0);
+		    },
+
+		    /**
+		     * Returns object representation of an instance
+		     * @return {Object} Object representation of an instance
+		     */
+		    toObject: function() {
+		      return extend(this.callSuper('toObject'), {
+		        saturate: this.saturate
+		      });
+		    }
+		  });
+
+		  /**
+		   * Returns filter instance from an object representation
+		   * @static
+		   * @param {Object} object Object to create an instance from
+		   * @return {fabric.Image.filters.Saturate} Instance of fabric.Image.filters.Saturate
+		   */
+		  fabric.Image.filters.Saturate.fromObject = function(object) {
+		    return new fabric.Image.filters.Saturate(object);
+		  };
+
+		})(typeof exports !== 'undefined' ? exports : this);
+
+	</script>
 	
 	<script type="text/javascript">
 		var canvas = new fabric.Canvas('paper', { isDrawingMode: false }),
@@ -372,7 +549,7 @@
 		    document.getElementById('bri_div').style.display = 'block'; 
 		    document.getElementById('con_div').style.display = 'block'; 
 		    document.getElementById('sat_div').style.display = 'block'; 
-		    document.getElementById('pix_div').style.display = 'block'; 
+		    // document.getElementById('pix_div').style.display = 'block'; 
 		    document.getElementById('color_div').style.display = 'inline-block'; 
 		    document.getElementById('font-size').style.display = 'inline-block';
 		    document.getElementById('u_div').style.display = 'block'; 
